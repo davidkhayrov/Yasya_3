@@ -1,6 +1,19 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 export default function FinalScreen() {
+  const [leaving, setLeaving] = useState(false);
+
+  const goToNextSite = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    if (leaving) return;
+    setLeaving(true);
+
+    // Даём завершиться плавному затемнению, затем переходим в этой же вкладке.
+    window.setTimeout(() => {
+      window.location.assign('https://yasya-three.vercel.app/');
+    }, 650);
+  };
+
   const fadeParticles = useMemo(
     () =>
       Array.from({ length: 30 }, () => ({
@@ -14,6 +27,13 @@ export default function FinalScreen() {
   );
 
   return (
+    <>
+      {leaving && (
+        <div
+          className="fixed inset-0 z-[9999] bg-[#08000F] animate-fade-in"
+          aria-label="Переход на следующий сайт"
+        />
+      )}
     <footer className="relative z-10 overflow-hidden px-5 sm:px-8 py-24 sm:py-32 max-w-3xl mx-auto text-center">
       {/* Исчезающие частицы */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -93,9 +113,9 @@ export default function FinalScreen() {
 
         <a
           href="https://yasya-three.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-neon animate-pulse-glow inline-flex items-center gap-2 px-10 sm:px-14 py-4 sm:py-5 text-base sm:text-lg md:text-xl"
+          onClick={goToNextSite}
+          aria-disabled={leaving}
+          className={`btn-neon animate-pulse-glow inline-flex items-center gap-2 px-10 sm:px-14 py-4 sm:py-5 text-base sm:text-lg md:text-xl ${leaving ? 'pointer-events-none opacity-70' : ''}`}
         >
           <span className="flex items-center gap-3">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -106,5 +126,6 @@ export default function FinalScreen() {
         </a>
       </div>
     </footer>
+    </>
   );
 }
